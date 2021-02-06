@@ -21,41 +21,41 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import Constant from "@/computes/const";
+import Constant from "@/data/const";
 
-import Dashboard from "@/views/Dashboard.vue";
-import Login from "@/views/Login.vue";
-import Contacts from "@/views/Contacts.vue";
-import Settings from "@/views/Settings.vue";
-import About from "@/views/About.vue";
-import NotFound from "@/views/NotFound.vue";
+import Dashboard from "@/views/Authorized/Dashboard";
+import Login from "@/views/Unauthorized/Login";
+import Contacts from "@/views/Authorized/Contacts";
+import Settings from "@/views/Authorized/Settings";
+import About from "@/views/Common/About";
+import NotFound from "@/views/Common/NotFound";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: Constant.ROUTER_TAG_DASHBOARD,
+    name: Constant.ROUTER_TAG.DASHBOARD,
     component: Dashboard,
   },
   {
     path: "/login",
-    name: Constant.ROUTER_TAG_LOGIN,
+    name: Constant.ROUTER_TAG.LOGIN,
     component: Login,
   },
   {
     path: "/contacts",
-    name: Constant.ROUTER_TAG_CONTACTS,
+    name: Constant.ROUTER_TAG.CONTACTS,
     component: Contacts,
   },
   {
     path: "/settings",
-    name: Constant.ROUTER_TAG_SETTINGS,
+    name: Constant.ROUTER_TAG.SETTINGS,
     component: Settings,
   },
   {
     path: "/about",
-    name: Constant.ROUTER_TAG_ABOUT,
+    name: Constant.ROUTER_TAG.ABOUT,
     component: About,
   },
   {

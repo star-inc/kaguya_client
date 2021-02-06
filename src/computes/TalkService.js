@@ -20,13 +20,13 @@
 
 const API_VERSION = 1;
 
-function KaguyaAPI(API_HOST) {
+function TalkService(API_HOST) {
     this.identity = "";
     this.client = new WebSocket(API_HOST);
     this.client.onclose = () => console.log("Closed");
 }
 
-KaguyaAPI.prototype = {
+TalkService.prototype = {
     _responseFactory: function (
         actionType, action, data
     ) {
@@ -44,45 +44,8 @@ KaguyaAPI.prototype = {
         }
     },
 
-    _uuid: function () {
-        let d = Date.now();
-        if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-            d += performance.now();
-        }
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            let r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-    },
-
     setOnMessageHandle: function (func) {
         this.client.onmessage = func;
-    },
-
-    registerUser: function (displayName, username, password) {
-        let apiStmt = this._responseFactory(
-            "authService",
-            "registerUser", {
-                displayName: displayName,
-                username: username,
-                password: password
-            }
-        );
-        this.client.send(apiStmt.data);
-        return apiStmt.id;
-    },
-
-    getAccess: function (userId, userPw) {
-        let apiStmt = this._responseFactory(
-            "authService",
-            "getAccess", {
-                username: userId,
-                password: userPw
-            }
-        );
-        this.client.send(apiStmt.data);
-        return apiStmt.id;
     },
 
     syncMessage: function () {

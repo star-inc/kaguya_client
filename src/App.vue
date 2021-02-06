@@ -21,15 +21,15 @@
     <div v-if="!ready" class="loader">
       <Loader/>
     </div>
-    <Console v-else />
+    <Console v-else/>
   </div>
 </template>
 
 <script>
-import Constant from "@/computes/const";
+import Constant from "@/data/const";
 
-import Loader from "@/components/App/Loader.vue";
-import Console from "@/components/App/Console.vue";
+import Loader from "@/components/Common/Loader";
+import Console from "@/views/Console";
 
 import axios from "axios";
 
@@ -43,36 +43,40 @@ export default {
     ready() {
       return this.$store.state.ready;
     },
-    verified() {
-      return this.$store.state.verified;
-    },
   },
-  watch:{
-    $route(){
+  watch: {
+    $route() {
       this.checkVerify();
     }
   },
   methods: {
-    checkVerify() {
-      if(this.$route.name === Constant.ROUTER_TAG_ABOUT) return;
-      if (this.$store.state.authorization.length) {
-        const authorized_key = this.$store.state.authorization;
-        axios.post(Constant.API_VERIFY_POINT, {
-          "authToken": authorized_key
-        })
-            .then((xhr) => console.log(xhr));
-        this.$store.commit("setVerified");
+    async checkVerify() {
+      if (this.$route.name === Constant.ROUTER_TAG.ABOUT) return;
+      const status = await this.verify();
+      const result = status.data;
+      if (result.status === 200) {
+        this.$store.commit("setUsername", result.reason);
       } else {
-        if(this.$route.name !== Constant.ROUTER_TAG_LOGIN){
-          this.$router.push({
-            name: Constant.ROUTER_TAG_LOGIN
-          })
+        if (this.$route.name !== Constant.ROUTER_TAG.LOGIN) {
+          await this.$router.push({
+            name: Constant.ROUTER_TAG.LOGIN
+          });
         }
       }
+    },
+    verify() {
+      return new Promise((resolve, reject) => {
+        axios.get(
+            Constant.API_POINT.VERIFY, {
+              withCredentials: true
+            })
+            .then(resolve)
+            .catch(reject);
+      })
     }
   },
-  created() {
-    this.checkVerify();
+  async created() {
+    await this.checkVerify();
     this.$store.commit("setReady");
   },
 };
@@ -90,6 +94,6 @@ export default {
 
 .loader {
   width: 10px;
-  margin:0 auto;
+  margin: 0 auto;
 }
 </style>

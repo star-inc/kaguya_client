@@ -19,10 +19,10 @@
 */
 
 import Vue from "vue";
-import App from "./App.vue";
+import App from "./App";
 
-import Store from "./computes/store.js";
-import Router from "./computes/router.js";
+import Store from "./data/store.js";
+import Router from "./data/router.js";
 
 Vue.config.productionTip = false;
 

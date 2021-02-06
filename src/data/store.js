@@ -1,4 +1,4 @@
-/*jshint esversion: 6 */
+/*jshint esversion: 8 */
 
 /*
     Kaguya - The opensource instant messaging framework.
@@ -18,15 +18,24 @@
     limitations under the License.
 */
 
-export default {
-    NAME: "Kaguya",
-    VERSION: "1.0.0",
-    API_AUTHORIZE_POINT: "http://localhost:5000/api/authorize",
-    API_VERIFY_POINT: "http://localhost:5000/api/verify",
-    ROUTER_TAG_DASHBOARD: "Dashboard",
-    ROUTER_TAG_LOGIN: "Login",
-    ROUTER_TAG_CONTACTS: "Contacts",
-    ROUTER_TAG_SETTINGS: "Settings",
-    ROUTER_TAG_ABOUT: "About"
-  };
-  
+import Vue from "vue";
+import Vuex from "vuex";
+
+Vue.use(Vuex);
+
+const Store = new Vuex.Store({
+    state: {
+        ready: false,
+        username: null
+    },
+    mutations: {
+        setReady(state) {
+            state.ready = true;
+        },
+        setUsername(state, value) {
+            state.username = value;
+        }
+    },
+});
+
+export default Store;

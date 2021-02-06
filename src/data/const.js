@@ -1,4 +1,6 @@
-<!--
+/*jshint esversion: 6 */
+
+/*
     Kaguya - The opensource instant messaging framework.
     ---
     Copyright 2020 Star Inc.(https://starinc.xyz)
@@ -14,10 +16,20 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
--->
+*/
 
-<template>
-  <div class="spinner-border" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>
-</template>
+export default {
+    NAME: "Kaguya",
+    VERSION: "1.0.0",
+    API_POINT: {
+        VERIFY: "http://dev.localhost:5000/api/verify",
+        AUTHORIZE: "http://dev.localhost:5000/api/authorize"
+    },
+    ROUTER_TAG: {
+        DASHBOARD: "Dashboard",
+        LOGIN: "Login",
+        CONTACTS: "Contacts",
+        SETTINGS: "Settings",
+        ABOUT: "About"
+    }
+  };

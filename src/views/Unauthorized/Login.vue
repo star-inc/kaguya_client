@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import Constant from "@/computes/const.js";
+import Constant from "@/data/const.js";
 
 import axios from "axios";
 
@@ -41,16 +41,20 @@ export default {
   name: "Login",
   methods: {
     login() {
-      axios.post(Constant.API_AUTHORIZE_POINT, {
+      axios.post(Constant.API_POINT.AUTHORIZE, {
         "username": this.username,
-        "password": this.password
+        "password": this.password,
+        "cookie": true
+      },{
+        withCredentials: true
       })
           .then(xhr => {
             const result = xhr.data;
             if (result.status === 200) {
               this.status = "Success";
-              this.$store.commit("setAuthorization", result.reason)
-              this.$router.push({name: Constant.ROUTER_TAG_DASHBOARD})
+              this.$router.push({
+                name: Constant.ROUTER_TAG.DASHBOARD
+              });
             } else {
               this.status = result.reason;
               this.password = "";
