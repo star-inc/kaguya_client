@@ -31,7 +31,7 @@ npm run lint
 ## License
 
 ```license
-  Copyright 2020 Star Inc.(https://starinc.xyz)
+   Copyright 2020 Star Inc.(https://starinc.xyz)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
