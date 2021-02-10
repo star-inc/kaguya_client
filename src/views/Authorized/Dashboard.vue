@@ -18,7 +18,8 @@
 
 <template>
   <chat-window
-      :current-user-id="currentUserId"
+      :current-user-id="$store.state.username"
+      @send-message="sendMessage"
       :messages="messages"
       :rooms="rooms"
       height="90vh"
@@ -27,6 +28,8 @@
 
 <script>
 import Constant from "@/data/const";
+
+import TalkService from "@/computes/TalkService"
 
 import ChatWindow from 'vue-advanced-chat'
 import 'vue-advanced-chat/dist/vue-advanced-chat.css'
@@ -113,6 +116,17 @@ export default {
       ],
       currentUserId: this.$store.state.username
     }
+  },
+  methods: {
+    sendMessage({ roomId, content }) {
+      this.client.sendTextMessage(0, roomId.toString(), content);
+    }
+  },
+  created() {
+    this.client = new TalkService(Constant.API_POINT.TALK + "/admin", "kaguya_test");
+    this.client.setOnMessageHandle(
+        (message) => console.log(message)
+    );
   }
 };
 </script>

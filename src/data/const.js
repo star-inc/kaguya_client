@@ -22,8 +22,9 @@ export default {
     NAME: "Kaguya",
     VERSION: "1.0.0",
     API_POINT: {
-        VERIFY: "http://dev.localhost:5000/api/verify",
-        AUTHORIZE: "http://dev.localhost:5000/api/authorize"
+        TALK: "ws://localhost:10101/talk",
+        VERIFY: "http://localhost:5000/api/verify",
+        AUTHORIZE: "http://localhost:5000/api/authorize"
     },
     ROUTER_TAG: {
         DASHBOARD: "Dashboard",

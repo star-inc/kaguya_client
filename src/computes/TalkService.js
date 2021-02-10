@@ -18,56 +18,55 @@
     limitations under the License.
 */
 
-const API_VERSION = 1;
+import {sha256} from 'js-sha256';
+import BigJSON from 'json-bigint';
 
-function TalkService(API_HOST) {
-    this.identity = "";
+function TalkService(API_HOST, responseSalt) {
     this.client = new WebSocket(API_HOST);
     this.client.onclose = () => console.log("Closed");
+    this.responseSalt = responseSalt;
 }
 
 TalkService.prototype = {
-    _responseFactory: function (
-        actionType, action, data
-    ) {
-        let actionID = this._uuid();
-        return {
-            id: actionID,
-            data: JSON.stringify({
-                version: API_VERSION,
-                actionID: actionID,
-                authToken: this.identity,
-                actionType: actionType,
-                action: action,
-                data: data ? data : {}
-            })
-        }
+    _requestFactory: function (type, data) {
+        return JSON.stringify({type, data});
     },
 
     setOnMessageHandle: function (func) {
-        this.client.onmessage = func;
+        this.client.onmessage = (event) => {
+            const data = BigJSON.parse(event.data);
+            const verifyHash = sha256(BigJSON.stringify({
+                data: data.data,
+                salt: this.responseSalt,
+                timestamp: data.timestamp
+            }));
+            if (verifyHash === data.signature) {
+                func(data.data);
+            } else {
+                console.error("InvalidSignature");
+            }
+        };
     },
 
-    syncMessage: function () {
-        let apiStmt = this._responseFactory(
-            "talkService",
-            "syncMessage", {}
-        );
-        this.client.send(apiStmt.data);
-        return apiStmt.id;
+    getHistoryMessage: function (timestamp, count) {
+        const request = this._requestFactory("GetHistoryMessage", {timestamp, count});
+        this.client.send(request);
+    },
+
+    getMessage: function (messageUUID) {
+        const request = this._requestFactory("GetMessage", messageUUID);
+        this.client.send(request);
     },
 
     sendTextMessage: function (targetType, target, message) {
-        let apiStmt = this._responseFactory(
-            "talkService",
-            "sendMessage", {
+        const request = this._requestFactory(
+            "SendMessage", {
                 contentType: 0,
-                targetType: targetType,
                 target: target,
                 content: message
-            }
-        );
-        this.client.send(apiStmt.data);
-        return apiStmt.id;
+            });
+        this.client.send(request);
     }
 }
+
+export default TalkService
