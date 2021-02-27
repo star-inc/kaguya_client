@@ -58,7 +58,7 @@ TalkService.prototype = {
         this.client.send(request);
     },
 
-    sendTextMessage: function (targetType, target, message) {
+    sendTextMessage: function (target, message) {
         const request = this._requestFactory(
             "SendMessage", {
                 contentType: 0,

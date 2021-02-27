@@ -19,10 +19,12 @@
 <template>
   <chat-window
       :current-user-id="$store.state.username"
-      @send-message="sendMessage"
       :messages="messages"
+      :messages-loaded="true"
+      :rooms-loaded="true"
       :rooms="rooms"
       height="90vh"
+      @send-message="sendMessage"
   />
 </template>
 
@@ -41,13 +43,14 @@ export default {
   },
   data() {
     return {
+      client: null,
       rooms: [
         {
           roomId: 1,
           roomName: 'Room 1',
           avatar: '/static/avatar.svg',
-          unreadCount: 4,
-          index: 3,
+          unreadCount: 0,
+          index: 1,
           lastMessage: {
             content: 'Last message received',
             sender_id: 1234,
@@ -69,63 +72,55 @@ export default {
               }
             },
             {
-              _id: 4321,
-              username: 'John Snow',
+              _id: 12342,
+              username: 'John Doe',
               avatar: '/static/avatar.svg',
               status: {
-                state: 'offline',
-                last_changed: '14 July, 20:00'
+                state: 'online',
+                last_changed: 'today, 14:30'
               }
-            }
+            },
           ],
-          typingUsers: [4321]
+          typingUsers: []
         }
       ],
-      messages: [
-        {
-          _id: 7890,
-          content: 'message 1',
-          sender_id: 1234,
-          username: 'John Doe',
-          date: '13 November',
-          timestamp: '10:20',
-          system: false,
-          saved: true,
-          distributed: true,
-          seen: true,
-          disable_actions: false,
-          disable_reactions: false,
-          file: {
-            name: 'My File',
-            size: 67351,
-            type: 'svg',
-            audio: true,
-            duration: 14.4,
-            url: '/static/avatar.svg'
-          },
-          reactions: {
-            wink: [
-              1234,
-              4321
-            ],
-            laughing: [
-              1234
-            ]
-          }
-        }
-      ],
+      messages: [],
       currentUserId: this.$store.state.username
     }
   },
   methods: {
-    sendMessage({ roomId, content }) {
-      this.client.sendTextMessage(0, roomId.toString(), content);
+    sendMessage({roomId, content}) {
+      this.client.sendTextMessage(roomId.toString(), content);
+    },
+    syncMessage(){
+      const timestamp = new Date().getDate();
+      this.client.getHistoryMessage(timestamp, 50);
+    },
+    receivedMessageFactory(operation) {
+      if (!("new_val" in operation)) return ;
+      const event = operation.new_val;
+      return {
+        _id: event.id,
+        content: event.message.content,
+        sender_id: event.message.origin,
+        username: event.message.origin,
+        date: '13 November',
+        timestamp: '10:20',
+        system: false,
+        saved: true,
+        distributed: true,
+        seen: true,
+        disable_actions: false,
+        disable_reactions: false,
+        file: null,
+        reactions: null
+      }
     }
   },
   created() {
     this.client = new TalkService(Constant.API_POINT.TALK + "/admin", "kaguya_test");
     this.client.setOnMessageHandle(
-        (message) => console.log(message)
+        (operation) => this.messages.push(this.receivedMessageFactory(operation))
     );
   }
 };
