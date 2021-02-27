@@ -32,7 +32,11 @@ TalkService.prototype = {
         return JSON.stringify({type, data});
     },
 
-    setOnMessageHandle: function (func) {
+    getWebSocketInstance: function () {
+        return this.client;
+    },
+
+    setOnMessageHandler: function (func) {
         this.client.onmessage = (event) => {
             const data = BigJSON.parse(event.data);
             const verifyHash = sha256(BigJSON.stringify({
@@ -48,8 +52,8 @@ TalkService.prototype = {
         };
     },
 
-    getHistoryMessage: function (timestamp, count) {
-        const request = this._requestFactory("GetHistoryMessage", {timestamp, count});
+    getHistoryMessages: function (timestamp, count) {
+        const request = this._requestFactory("GetHistoryMessages", {timestamp, count});
         this.client.send(request);
     },
 

@@ -21,8 +21,8 @@
       :current-user-id="$store.state.username"
       :messages="messages"
       :messages-loaded="true"
-      :rooms-loaded="true"
       :rooms="rooms"
+      :rooms-loaded="true"
       height="90vh"
       @send-message="sendMessage"
   />
@@ -92,15 +92,22 @@ export default {
     sendMessage({roomId, content}) {
       this.client.sendTextMessage(roomId.toString(), content);
     },
-    syncMessage(){
-      const timestamp = new Date().getDate();
-      this.client.getHistoryMessage(timestamp, 50);
+    syncMessage() {
+      const timestamp = new Date().getTime();
+      this.client.getHistoryMessages(timestamp, 50);
     },
-    receivedMessageFactory(operation) {
-      if (!("new_val" in operation)) return ;
-      const event = operation.new_val;
+    fetchHandler(operation) {
+      if (operation instanceof Array) {
+        this.messages = operation.map((event) => this.messageFactory(event));
+      } else {
+        if (!("new_val" in operation)) return;
+        const event = operation.new_val;
+        this.messages.push(this.messageFactory(event));
+      }
+    },
+    messageFactory(event) {
       return {
-        _id: event.id,
+        _id: event.id || event.uuid,
         content: event.message.content,
         sender_id: event.message.origin,
         username: event.message.origin,
@@ -119,9 +126,8 @@ export default {
   },
   created() {
     this.client = new TalkService(Constant.API_POINT.TALK + "/admin", "kaguya_test");
-    this.client.setOnMessageHandle(
-        (operation) => this.messages.push(this.receivedMessageFactory(operation))
-    );
+    this.client.setOnMessageHandler(this.fetchHandler);
+    this.client.getWebSocketInstance().onopen = () => this.syncMessage();
   }
 };
 </script>
