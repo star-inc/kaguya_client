@@ -21,13 +21,13 @@
 import { sha256 } from 'js-sha256'
 import BigJSON from 'json-bigint'
 
-function TalkService(API_HOST, responseSalt) {
+function BoxService(API_HOST, responseSalt) {
   this.client = new WebSocket(API_HOST)
   this.client.onclose = () => console.log('Closed')
   this.responseSalt = responseSalt
 }
 
-TalkService.prototype = {
+BoxService.prototype = {
   _requestFactory(type, data) {
     return JSON.stringify({ type, data })
   },
@@ -54,24 +54,18 @@ TalkService.prototype = {
     }
   },
 
-  getHistoryMessages(timestamp, count) {
-    const request = this._requestFactory('GetHistoryMessages', {
+  getHistoryMessagebox(timestamp, count) {
+    const request = this._requestFactory('GetHistoryMessagebox', {
       timestamp,
       count,
     })
     this.client.send(request)
   },
 
-  getMessage(messageUUID) {
-    const request = this._requestFactory('GetMessage', messageUUID)
-    this.client.send(request)
-  },
-
-  sendTextMessage(message) {
-    const data = { contentType: 0, content: message }
-    const request = this._requestFactory('SendMessage', data)
+  deleteMessagebox(messageboxUUID) {
+    const request = this._requestFactory('DeleteMessagebox', messageboxUUID)
     this.client.send(request)
   },
 }
 
-export default TalkService
+export default BoxService
