@@ -45,6 +45,8 @@ BoxService.prototype = {
           salt: this.responseSalt,
           timestamp: data.timestamp,
         })
+            .replace(/</g, '\\u003c')
+            .replace(/>/g, '\\u003e')
       )
       if (verifyHash === data.signature) {
         func(data.data)
