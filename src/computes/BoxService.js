@@ -29,7 +29,7 @@ function BoxService(API_HOST, responseSalt) {
 
 BoxService.prototype = {
   _requestFactory(type, data) {
-    return JSON.stringify({ type, data })
+    return BigJSON.stringify({ type, data })
   },
 
   getWebSocketInstance() {
@@ -45,8 +45,8 @@ BoxService.prototype = {
           salt: this.responseSalt,
           timestamp: data.timestamp,
         })
-            .replace(/</g, '\\u003c')
-            .replace(/>/g, '\\u003e')
+          .replace(/</g, '\\u003c')
+          .replace(/>/g, '\\u003e')
       )
       if (verifyHash === data.signature) {
         func(data.data)
@@ -56,8 +56,8 @@ BoxService.prototype = {
     }
   },
 
-  getHistoryMessagebox(timestamp, count) {
-    const request = this._requestFactory('GetHistoryMessagebox', {
+  syncMessagebox(timestamp, count) {
+    const request = this._requestFactory('SyncMessagebox', {
       timestamp,
       count,
     })

@@ -29,7 +29,7 @@ function TalkService(API_HOST, responseSalt) {
 
 TalkService.prototype = {
   _requestFactory(type, data) {
-    return JSON.stringify({ type, data })
+    return BigJSON.stringify({ type, data })
   },
 
   getWebSocketInstance() {
@@ -45,8 +45,8 @@ TalkService.prototype = {
           salt: this.responseSalt,
           timestamp: data.timestamp,
         })
-            .replace(/</g, '\\u003c')
-            .replace(/>/g, '\\u003e')
+          .replace(/</g, '\\u003c')
+          .replace(/>/g, '\\u003e')
       )
       if (verifyHash === data.signature) {
         func(data.data)
