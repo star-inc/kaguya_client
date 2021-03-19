@@ -17,15 +17,7 @@
 -->
 
 <template>
-  <chat-window
-      :current-user-id="$store.state.username"
-      :messages="messages"
-      :messages-loaded="true"
-      :rooms="rooms"
-      :rooms-loaded="true"
-      height="90vh"
-      @send-message="sendMessage"
-  />
+    <div />
 </template>
 
 <script>
@@ -33,14 +25,8 @@ import Constant from "@/data/const";
 
 import TalkService from "@/computes/TalkService"
 
-import ChatWindow from 'vue-advanced-chat'
-import 'vue-advanced-chat/dist/vue-advanced-chat.css'
-
 export default {
   name: Constant.ROUTER_TAG.DASHBOARD,
-  components: {
-    ChatWindow,
-  },
   data() {
     return {
       client: null,
