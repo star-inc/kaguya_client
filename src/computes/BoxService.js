@@ -18,6 +18,7 @@
     limitations under the License.
 */
 
+import zlib from 'zlib'
 import { sha256 } from 'js-sha256'
 import BigJSON from 'json-bigint'
 
@@ -30,6 +31,14 @@ function BoxService(API_HOST, responseSalt) {
 BoxService.prototype = {
   _requestFactory(type, data) {
     return BigJSON.stringify({ type, data })
+  },
+
+  _decompress(b64String) {
+    return new Promise((resolve, reject) =>
+      zlib.gunzip(Buffer.from(b64String, 'base64'), (error, result) =>
+        !error ? resolve(result) : reject(error)
+      )
+    )
   },
 
   getWebSocketInstance() {
@@ -45,11 +54,13 @@ BoxService.prototype = {
           salt: this.responseSalt,
           timestamp: data.timestamp,
         })
-          .replace(/</g, '\\u003c')
-          .replace(/>/g, '\\u003e')
       )
       if (verifyHash === data.signature) {
-        func(data.data)
+        if (data.data === null) {
+          func(data.data)
+        } else {
+          this._decompress(data.data).then((raw) => func(BigJSON.parse(raw)))
+        }
       } else {
         console.error('InvalidSignature')
       }
